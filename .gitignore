@@ -4,3 +4,5 @@ encore.gen.cue
 encore.gen
 .env
 .env.example
+/.encore
+/encore.gen
