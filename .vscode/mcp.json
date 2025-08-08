@@ -1,0 +1,13 @@
+{
+    "servers": {
+        "hypermode-devux-graph": {
+                "command": "npx",
+                "args": [
+                  "mcp-remote",
+                  "https://devux-graph-devux.hypermode.host/mcp-ro/sse",
+                  "--header",
+                  "Authorization: Bearer ufnPSEAjR0FrlI"
+                ]
+            }
+    }   
+}
