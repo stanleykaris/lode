@@ -3,13 +3,15 @@ package knowledgegraph
 import (
 	"context"
 	"log"
-	"encore.dev/types/uuid"
+
 	"encore.app/dgraphclient"
+	"encore.dev/types/uuid"
+	"github.com/dgraph-io/dgo/v210"
 	"github.com/dgraph-io/dgo/v210/protos/api"
 )
 
 type CreateNodeRequest struct {
-	Name string `json:"name"`
+	Name       string `json:"name"`
 	EntityType string `json:"entity_type"`
 }
 
@@ -24,7 +26,12 @@ func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResp
 		return nil, err
 	}
 	session := driver.NewTxn()
-	defer session.Discard(ctx)
+	defer func(session *dgo.Txn, ctx context.Context) {
+		err := session.Discard(ctx)
+		if err != nil {
+			log.Printf("Failed to discard session: %v", err)
+		}
+	}(session, ctx)
 
 	_, err = session.Mutate(ctx, &api.Mutation{
 		SetJson: []byte(`{"name": "` + req.Name + `", "type": "` + req.EntityType + `"}`),
