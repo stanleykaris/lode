@@ -2,6 +2,7 @@ package knowledgegraph
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 
 	"encore.app/dgraphclient"
@@ -33,8 +34,14 @@ func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResp
 		}
 	}(session, ctx)
 
+	payload := map[string]string{
+		"name":       req.Name,
+		"entityType": req.EntityType,
+	}
+	b, _ := json.Marshal(payload)
 	_, err = session.Mutate(ctx, &api.Mutation{
-		SetJson: []byte(`{"name": "` + req.Name + `", "type": "` + req.EntityType + `"}`), CommitNow: true,
+		SetJson: b,
+		CommitNow: true,
 	})
 	if err != nil {
 		log.Printf("Failed to create node: %v", err)
