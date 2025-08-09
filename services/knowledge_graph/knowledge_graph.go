@@ -34,7 +34,7 @@ func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResp
 	}(session, ctx)
 
 	_, err = session.Mutate(ctx, &api.Mutation{
-		SetJson: []byte(`{"name": "` + req.Name + `", "type": "` + req.EntityType + `"}`),
+		SetJson: []byte(`{"name": "` + req.Name + `", "type": "` + req.EntityType + `"}`), CommitNow: true,
 	})
 	if err != nil {
 		log.Printf("Failed to create node: %v", err)
