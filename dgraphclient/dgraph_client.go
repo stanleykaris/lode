@@ -12,13 +12,11 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-type Secrets struct {
+var secrets = config.Load[struct {
 	DgraphEndpoint string `config:"DGRAPH_ENDPOINT,secret"` // e.g. "localhost:9081"
 	DgraphTLS      bool   `config:"DGRAPH_TLS,secret"`      // optional
 	DgraphAPIKey   string `config:"DGRAPH_API_KEY,secret"`  // optional
-}
-
-var secrets = config.Load[Secrets]()
+}]()
 
 func Init() (*dgo.Dgraph, error) {
 	// Build gRPC connection (TLS handling omitted for brevity)
