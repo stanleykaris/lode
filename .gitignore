@@ -6,3 +6,4 @@ encore.gen
 .env.example
 /.encore
 /encore.gen
+.vscode
