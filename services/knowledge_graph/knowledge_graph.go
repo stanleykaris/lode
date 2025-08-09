@@ -39,7 +39,7 @@ func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResp
 		"entityType": req.EntityType,
 	}
 	b, _ := json.Marshal(payload)
-	_, err = session.Mutate(ctx, &api.Mutation{
+	muResp, err := session.Mutate(ctx, &api.Mutation{
 		SetJson: b,
 		CommitNow: true,
 	})
@@ -48,5 +48,7 @@ func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResp
 		return nil, err
 	}
 
-	return &CreateNodeResponse{Id: uuid.NewV5(uuid.Nil, "")}, nil
+	uid := muResp.GetUids()["node"]
+
+	return &CreateNodeResponse{Id: uuid.NewV5(uuid.Nil, uid)}, nil
 }
