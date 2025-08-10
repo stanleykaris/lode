@@ -3,7 +3,6 @@ package dgraphclient
 import (
 	"context"
 
-	"encore.dev/config"
 	"github.com/dgraph-io/dgo/v210"
 	"github.com/dgraph-io/dgo/v210/protos/api"
 	"google.golang.org/grpc"
@@ -12,16 +11,16 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-var secrets = config.Load[struct {
-	DgraphEndpoint string `config:"DGRAPH_ENDPOINT,secret"` // e.g. "localhost:9081"
-	DgraphTLS      bool   `config:"DGRAPH_TLS,secret"`      // optional
-	DgraphAPIKey   string `config:"DGRAPH_API_KEY,secret"`  // optional
-}]()
+type Config struct {
+	Endpoint string
+	TLS      bool
+	APIKey   string
+}
 
-func Init() (*dgo.Dgraph, error) {
-	// Build gRPC connection (TLS handling omitted for brevity)
+func New(cfg Config) (*dgo.Dgraph, error) {
+	// Build gRPC connection (TLS handling)
 	var opts []grpc.DialOption
-	if secrets.DgraphTLS {
+	if cfg.TLS {
 		creds := credentials.NewTLS(nil)
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 	} else {
@@ -29,21 +28,24 @@ func Init() (*dgo.Dgraph, error) {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 
-	authInterceptor := func(
-		ctx context.Context,
-		method string,
-		req, reply interface{},
-		cc *grpc.ClientConn,
-		invoker grpc.UnaryInvoker,
-		opts ...grpc.CallOption,
-	) error {
-		md := metadata.Pairs("authorization", "Bearer "+secrets.DgraphAPIKey)
-		ctx = metadata.NewOutgoingContext(ctx, md)
-		return invoker(ctx, method, req, reply, cc, opts...)
+	// Optional API key propagation
+	if cfg.APIKey != "" {
+		authInterceptor := func(
+			ctx context.Context,
+			method string,
+			req, reply interface{},
+			cc *grpc.ClientConn,
+			invoker grpc.UnaryInvoker,
+			callOpts ...grpc.CallOption,
+		) error {
+			md := metadata.Pairs("authorization", "Bearer "+cfg.APIKey)
+			ctx = metadata.NewOutgoingContext(ctx, md)
+			return invoker(ctx, method, req, reply, cc, callOpts...)
+		}
+		opts = append(opts, grpc.WithUnaryInterceptor(authInterceptor))
 	}
-	opts = append(opts, grpc.WithUnaryInterceptor(authInterceptor))
 
-	conn, err := grpc.NewClient(secrets.DgraphEndpoint, opts...)
+	conn, err := grpc.NewClient(cfg.Endpoint, opts...)
 	if err != nil {
 		return nil, err
 	}
