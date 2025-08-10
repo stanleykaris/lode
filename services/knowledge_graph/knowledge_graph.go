@@ -6,10 +6,17 @@ import (
 	"log"
 
 	"encore.app/dgraphclient"
+	"encore.dev/config"
 	"encore.dev/types/uuid"
 	"github.com/dgraph-io/dgo/v210"
 	"github.com/dgraph-io/dgo/v210/protos/api"
 )
+
+var secrets = config.Load[struct {
+	DgraphEndpoint string `config:"DGRAPH_ENDPOINT,secret"`
+	DgraphTLS      bool   `config:"DGRAPH_TLS,secret"`
+	DgraphAPIKey   string `config:"DGRAPH_API_KEY,secret"`
+}]()
 
 type CreateNodeRequest struct {
 	Name       string `json:"name"`
@@ -21,15 +28,18 @@ type CreateNodeResponse struct {
 }
 
 func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResponse, error) {
-	driver, err := dgraphclient.Init()
+	driver, err := dgraphclient.New(dgraphclient.Config{
+		Endpoint: secrets.DgraphEndpoint,
+		TLS:      secrets.DgraphTLS,
+		APIKey:   secrets.DgraphAPIKey,
+	})
 	if err != nil {
 		log.Printf("Failed to initialize dgraph driver: %v", err)
 		return nil, err
 	}
 	session := driver.NewTxn()
 	defer func(session *dgo.Txn, ctx context.Context) {
-		err := session.Discard(ctx)
-		if err != nil {
+		if err := session.Discard(ctx); err != nil {
 			log.Printf("Failed to discard session: %v", err)
 		}
 	}(session, ctx)
@@ -40,7 +50,7 @@ func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResp
 	}
 	b, _ := json.Marshal(payload)
 	muResp, err := session.Mutate(ctx, &api.Mutation{
-		SetJson: b,
+		SetJson:   b,
 		CommitNow: true,
 	})
 	if err != nil {
@@ -49,6 +59,5 @@ func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResp
 	}
 
 	uid := muResp.GetUids()["node"]
-
 	return &CreateNodeResponse{Id: uuid.NewV5(uuid.Nil, uid)}, nil
 }

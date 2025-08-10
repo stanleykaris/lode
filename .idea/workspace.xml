@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e4fec2f-6296-4aeb-9ac8-6b537aaa91e9" name="Changes" comment="feat: improve knowledge graph handling and project setup&#10;&#10;- Enhance session management with error logging on discard failure&#10;- Streamline Dgraph client secret loading implementation&#10;- Update project exclusion folders and workspace settings" />
+    <list default="true" id="7e4fec2f-6296-4aeb-9ac8-6b537aaa91e9" name="Changes" comment="feat: refactor Dgraph client and enhance knowledge graph handling&#10;&#10;- Replace global secrets with structured config for Dgraph client&#10;- Refactor client initialization to allow configurable endpoint, TLS, and API key&#10;- Improve session discard with enhanced error handling">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dgraphclient/dgraph_client.go" beforeDir="false" afterPath="$PROJECT_DIR$/dgraphclient/dgraph_client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/knowledge_graph/knowledge_graph.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/knowledge_graph/knowledge_graph.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -87,7 +91,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: improve knowledge graph handling and project setup&#10;&#10;- Enhance session management with error logging on discard failure&#10;- Streamline Dgraph client secret loading implementation&#10;- Update project exclusion folders and workspace settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: improve knowledge graph handling and project setup&#10;&#10;- Enhance session management with error logging on discard failure&#10;- Streamline Dgraph client secret loading implementation&#10;- Update project exclusion folders and workspace settings" />
+    <MESSAGE value="chore: update .gitignore to exclude .vscode folder" />
+    <MESSAGE value="feat: refactor Dgraph client and enhance knowledge graph handling&#10;&#10;- Replace global secrets with structured config for Dgraph client&#10;- Refactor client initialization to allow configurable endpoint, TLS, and API key&#10;- Improve session discard with enhanced error handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: refactor Dgraph client and enhance knowledge graph handling&#10;&#10;- Replace global secrets with structured config for Dgraph client&#10;- Refactor client initialization to allow configurable endpoint, TLS, and API key&#10;- Improve session discard with enhanced error handling" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
