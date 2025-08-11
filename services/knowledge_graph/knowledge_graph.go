@@ -12,7 +12,11 @@ import (
 	"github.com/dgraph-io/dgo/v210/protos/api"
 )
 
-var secrets = config.Load[struct {
+var secrets struct {
+	DgraphEndpoint string `config:"DGRAPH_ENDPOINT,secret"`
+	DgraphTLS      bool   `config:"DGRAPH_TLS,secret"`
+	DgraphAPIKey   string `config:"DGRAPH_API_KEY,secret"`
+} = config.Load[struct {
 	DgraphEndpoint string `config:"DGRAPH_ENDPOINT,secret"`
 	DgraphTLS      bool   `config:"DGRAPH_TLS,secret"`
 	DgraphAPIKey   string `config:"DGRAPH_API_KEY,secret"`
