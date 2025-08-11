@@ -3,10 +3,11 @@ package knowledgegraph
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
+	"strconv"
 
 	"encore.app/dgraphclient"
-	"encore.dev/config"
 	"encore.dev/types/uuid"
 	"github.com/dgraph-io/dgo/v210"
 	"github.com/dgraph-io/dgo/v210/protos/api"
@@ -14,13 +15,9 @@ import (
 
 var secrets struct {
 	DgraphEndpoint string `config:"DGRAPH_ENDPOINT,secret"`
-	DgraphTLS      bool   `config:"DGRAPH_TLS,secret"`
+	DgraphTLS      string   `config:"DGRAPH_TLS,secret"`
 	DgraphAPIKey   string `config:"DGRAPH_API_KEY,secret"`
-} = config.Load[struct {
-	DgraphEndpoint string `config:"DGRAPH_ENDPOINT,secret"`
-	DgraphTLS      bool   `config:"DGRAPH_TLS,secret"`
-	DgraphAPIKey   string `config:"DGRAPH_API_KEY,secret"`
-}]()
+}
 
 type CreateNodeRequest struct {
 	Name       string `json:"name"`
@@ -32,9 +29,13 @@ type CreateNodeResponse struct {
 }
 
 func CreateNodeAPI(ctx context.Context, req *CreateNodeRequest) (*CreateNodeResponse, error) {
+	tlsEnabled, err := strconv.ParseBool(secrets.DgraphTLS)
+	if err != nil {
+		return nil, fmt.Errorf("invalid DGRAPH_TLS value %q: %w", secrets.DgraphTLS, err)
+	}
 	driver, err := dgraphclient.New(dgraphclient.Config{
 		Endpoint: secrets.DgraphEndpoint,
-		TLS:      secrets.DgraphTLS,
+		TLS:      tlsEnabled,
 		APIKey:   secrets.DgraphAPIKey,
 	})
 	if err != nil {

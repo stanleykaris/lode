@@ -45,7 +45,7 @@ func New(cfg Config) (*dgo.Dgraph, error) {
 		opts = append(opts, grpc.WithUnaryInterceptor(authInterceptor))
 	}
 
-	conn, err := grpc.NewClient(cfg.Endpoint, opts...)
+	conn, err := grpc.Dial(cfg.Endpoint, opts...)
 	if err != nil {
 		return nil, err
 	}
