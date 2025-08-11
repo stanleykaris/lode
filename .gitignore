@@ -7,3 +7,4 @@ encore.gen
 /.encore
 /encore.gen
 .vscode
+.kilocode
