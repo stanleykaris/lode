@@ -6,5 +6,5 @@ encore.gen
 .env.example
 /.encore
 /encore.gen
-.vscode
+.vscode/
 .kilocode
